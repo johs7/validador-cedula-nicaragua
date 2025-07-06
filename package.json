@@ -1,6 +1,6 @@
 {
   "name": "nicaraguan-id-utils",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Valida y analiza cédulas de identidad de Nicaragua",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
