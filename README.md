@@ -120,3 +120,13 @@ Desarrollado con ❤️ por [Johanssen Roque](https://github.com/Johs7)
 ## 📄 Licencia
 
 MIT © 2025 Johanssen Roque
+
+---
+
+## 📚 Documentación completa
+
+Consulta la guía completa de instalación, funciones y casos de uso en el sitio oficial:
+
+👉 [https://validador-cedula-docs.netlify.app](https://validador-cedula-docs.netlify.app)
+
+Incluye ejemplos detallados, referencia de API, formato oficial, y preguntas frecuentes.
