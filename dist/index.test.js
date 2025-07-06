@@ -16,8 +16,23 @@ describe('Nicaraguan ID Utils', () => {
         });
         it('detecta correctamente si una persona es menor de edad', () => {
             const year = new Date().getFullYear() - 15;
-            const id = `001-010101-${String(year).slice(-2)}01A`.replace('-', '');
-            expect(isMinor('001-010101-0001A')).toBe(true);
+            const shortYear = String(year).slice(-2);
+            const id = `001-010101-${shortYear}01A`;
+            expect(isMinor(id)).toBe(true);
+        });
+        it('detecta si una persona tiene edad suficiente para tener cédula (16+)', () => {
+            const year = new Date().getFullYear() - 17;
+            const shortYear = String(year).slice(-2);
+            const id = `001-010101-${shortYear}01A`;
+            const { isEligibleForId } = parse(id);
+            expect(isEligibleForId).toBe(true);
+        });
+        it('detecta correctamente si no tiene edad para cédula (<16)', () => {
+            const year = new Date().getFullYear() - 14;
+            const shortYear = String(year).slice(-2);
+            const id = `001-010101-${shortYear}01A`;
+            const { isEligibleForId } = parse(id);
+            expect(isEligibleForId).toBe(false);
         });
         it('obtiene correctamente la ubicación', () => {
             const loc = getLocation('001-030505-1234A');
@@ -30,6 +45,10 @@ describe('Nicaraguan ID Utils', () => {
             expect(typeof age).toBe('number');
             expect(age).toBeGreaterThan(0);
         });
+        it('formatea correctamente la fecha como dd-mm-yyyy', () => {
+            const parsed = parse('001-030505-1234A');
+            expect(parsed?.birthDateFormatted).toBe('03-05-2005');
+        });
     });
     describe('Validaciones negativas', () => {
         it('rechaza formato inválido', () => {
@@ -37,11 +56,11 @@ describe('Nicaraguan ID Utils', () => {
         });
         it('rechaza código de municipio desconocido', () => {
             expect(isValid('999-010101-1234A')).toBe(false);
-            expect(getValidationError('999-010101-1234A')).toMatch(/Unknown municipality/);
+            expect(getValidationError('999-010101-1234A')).toMatch(/municipio desconocido/i);
         });
         it('rechaza fechas inválidas', () => {
             expect(isValid('001-991332-1234A')).toBe(false);
-            expect(getValidationError('001-991332-1234A')).toMatch(/Invalid birth date/);
+            expect(getValidationError('001-991332-1234A')).toMatch(/fecha de nacimiento inválida/i);
         });
         it('rechaza letra minúscula como verificador', () => {
             expect(isValid('001-030505-1234a')).toBe(false);

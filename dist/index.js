@@ -20,6 +20,9 @@ export function validate(id) {
     if (Number.isNaN(birthDate.getTime())) {
         return { valid: false, error: 'Fecha de nacimiento inválida' };
     }
+    if (!isEligibleForId(birthDate)) {
+        return { valid: false, error: 'Edad insuficiente para tener cédula (mínimo 16 años)' };
+    }
     return { valid: true };
 }
 export function format(raw) {
@@ -46,9 +49,11 @@ export function parse(id) {
         department: region?.department ?? 'Desconocido',
         municipality: region?.municipality ?? 'Desconocido',
         birthDate,
+        birthDateFormatted: formatDateDDMMYYYY(birthDate),
         serial,
         verifier,
         isAdult: isOver18(birthDate),
+        isEligibleForId: isEligibleForId(birthDate),
     };
 }
 function resolveBirthYear(yy) {
@@ -73,6 +78,15 @@ export function getAge(date) {
 export function isMinor(id) {
     const data = parse(id);
     return data ? getAge(data.birthDate) < 18 : false;
+}
+export function isEligibleForId(date) {
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const birthdayNotReached = today.getMonth() < date.getMonth() ||
+        (today.getMonth() === date.getMonth() && today.getDate() < date.getDate());
+    if (birthdayNotReached)
+        age--;
+    return age >= 16;
 }
 export function getBirthDate(id) {
     return parse(id)?.birthDate ?? null;
@@ -101,4 +115,10 @@ export function getMunicipalitiesByDepartment(dept) {
 export function getValidationError(id) {
     const result = validate(id);
     return result.valid ? null : result.error;
+}
+function formatDateDDMMYYYY(date) {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
 }

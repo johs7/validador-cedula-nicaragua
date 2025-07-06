@@ -2,9 +2,11 @@ export interface NicaraguanIdData {
     department: string;
     municipality: string;
     birthDate: Date;
+    birthDateFormatted: string;
     serial: string;
     verifier: string;
     isAdult: boolean;
+    isEligibleForId?: boolean;
 }
 export type ValidationResult = {
     valid: true;
@@ -19,6 +21,7 @@ export declare function normalize(id: string): string;
 export declare function parse(id: string): NicaraguanIdData | null;
 export declare function getAge(date: Date): number;
 export declare function isMinor(id: string): boolean;
+export declare function isEligibleForId(date: Date): boolean;
 export declare function getBirthDate(id: string): Date | null;
 export declare function getLocation(id: string): {
     department: string;
