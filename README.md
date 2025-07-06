@@ -50,22 +50,23 @@ Los guiones son opcionales y la letra final debe ser mayúscula.
 
 ## 🤖 Funciones disponibles
 
-| Función                                | Descripción                          |
-| -------------------------------------- | ------------------------------------ |
-| `isValid(id)`                          | `true` si la cédula es válida        |
-| `validate(id)`                         | Resultado detallado de validación    |
-| `format(raw)`                          | Formatea al estilo oficial           |
-| `normalize(id)`                        | Alias de `format()`                  |
-| `parse(id)`                            | Devuelve `NicaraguanIdData` o `null` |
-| `getAge(date)`                         | Edad exacta desde una fecha          |
-| `isMinor(id)`                          | `true` si es menor de edad           |
-| `getLocation(id)`                      | `{ department, municipality }`       |
-| `getBirthDate(id)`                     | `Date` de nacimiento                 |
-| `getValidationError(id)`               | Mensaje si es inválida               |
-| `getDepartment(code)`                  | Nombre del departamento              |
-| `getMunicipality(code)`                | Nombre del municipio                 |
-| `getAllDepartments()`                  | Lista de todos los departamentos     |
-| `getMunicipalitiesByDepartment(depto)` | Municipios por departamento          |
+| Función                                | Descripción                                       |
+| -------------------------------------- | ------------------------------------------------- |
+| `isValid(id)`                          | `true` si la cédula es válida                     |
+| `validate(id)`                         | Resultado detallado de validación                 |
+| `format(raw)`                          | Formatea al estilo oficial                        |
+| `normalize(id)`                        | Alias de `format()`                               |
+| `parse(id)`                            | Devuelve `NicaraguanIdData` o `null`              |
+| `getAge(date)`                         | Edad exacta desde una fecha                       |
+| `isMinor(id)`                          | `true` si es menor de edad                        |
+| `isEligibleForId(date)`                | `true` si tiene edad suficiente para cédula (16+) |
+| `getLocation(id)`                      | `{ department, municipality }`                    |
+| `getBirthDate(id)`                     | `Date` de nacimiento                              |
+| `getValidationError(id)`               | Mensaje si es inválida                            |
+| `getDepartment(code)`                  | Nombre del departamento                           |
+| `getMunicipality(code)`                | Nombre del municipio                              |
+| `getAllDepartments()`                  | Lista de todos los departamentos                  |
+| `getMunicipalitiesByDepartment(depto)` | Municipios por departamento                       |
 
 ---
 
@@ -79,6 +80,7 @@ Los guiones son opcionales y la letra final debe ser mayúscula.
   serial: '1234',
   verifier: 'A',
   isAdult: true
+  isEligibleForId: true
 }
 ```
 
@@ -94,6 +96,7 @@ export interface NicaraguanIdData {
   serial: string;
   verifier: string;
   isAdult: boolean;
+  isEligibleForId?: boolean;
 }
 
 export type ValidationResult =

@@ -7,6 +7,7 @@ export interface NicaraguanIdData {
     serial: string;
     verifier: string;
     isAdult: boolean;
+    isEligibleForId?: boolean;
 }
 
 export type ValidationResult =
@@ -74,6 +75,7 @@ export function parse(id: string): NicaraguanIdData | null {
         serial,
         verifier,
         isAdult: isOver18(birthDate),
+        isEligibleForId: isEligibleForId(birthDate),
     };
 }
 
@@ -107,6 +109,18 @@ export function isMinor(id: string): boolean {
     const data = parse(id);
     return data ? getAge(data.birthDate) < 18 : false;
 }
+
+export function isEligibleForId(date: Date): boolean {
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const birthdayNotReached =
+        today.getMonth() < date.getMonth() ||
+        (today.getMonth() === date.getMonth() && today.getDate() < date.getDate());
+
+    if (birthdayNotReached) age--;
+    return age >= 16;
+}
+
 
 export function getBirthDate(id: string): Date | null {
     return parse(id)?.birthDate ?? null;
