@@ -1,0 +1,13 @@
+src/
+tests/
+__tests__/
+.vscode/
+node_modules/
+*.test.ts
+*.spec.ts
+tsconfig.json
+vitest.config.ts
+.env
+README-drafts/
+coverage/
+dist/test/

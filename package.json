@@ -1,0 +1,27 @@
+{
+  "name": "nicaraguan-id-utils",
+  "version": "1.0.1",
+  "description": "Valida y analiza cédulas de identidad de Nicaragua",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest"
+  },
+  "author": {
+    "name": "Johanssen Roque",
+    "email": "roquejohanssen@gmail.com",
+    "url": "https://github.com/johs7"
+  },
+  "license": "MIT",
+  "keywords": [
+    "nicaragua",
+    "cedula",
+    "id",
+    "typescript",
+    "validation"
+  ]
+}
