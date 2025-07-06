@@ -67,6 +67,7 @@ Los guiones son opcionales y la letra final debe ser mayúscula.
 | `getMunicipality(code)`                | Nombre del municipio                              |
 | `getAllDepartments()`                  | Lista de todos los departamentos                  |
 | `getMunicipalitiesByDepartment(depto)` | Municipios por departamento                       |
+| `birthDateFormatted`                   | Fecha como dd-mm-yyyy (campo en parse())          |
 
 ---
 
@@ -77,6 +78,7 @@ Los guiones son opcionales y la letra final debe ser mayúscula.
   department: 'Managua',
   municipality: 'Managua',
   birthDate: 2005-05-03T00:00:00.000Z,
+  birthDateFormatted: '03-05-2005',
   serial: '1234',
   verifier: 'A',
   isAdult: true
@@ -93,6 +95,7 @@ export interface NicaraguanIdData {
   department: string;
   municipality: string;
   birthDate: Date;
+  birthDateFormatted?: string;
   serial: string;
   verifier: string;
   isAdult: boolean;

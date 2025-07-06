@@ -4,6 +4,7 @@ export interface NicaraguanIdData {
     department: string;
     municipality: string;
     birthDate: Date;
+    birthDateFormatted?: string;
     serial: string;
     verifier: string;
     isAdult: boolean;
@@ -72,11 +73,13 @@ export function parse(id: string): NicaraguanIdData | null {
         department: region?.department ?? 'Desconocido',
         municipality: region?.municipality ?? 'Desconocido',
         birthDate,
+        birthDateFormatted: formatDateDDMMYYYY(birthDate),
         serial,
         verifier,
         isAdult: isOver18(birthDate),
         isEligibleForId: isEligibleForId(birthDate),
     };
+
 }
 
 function resolveBirthYear(yy: number): number {
@@ -156,3 +159,11 @@ export function getValidationError(id: string): string | null {
     const result = validate(id);
     return result.valid ? null : result.error;
 }
+
+function formatDateDDMMYYYY(date: Date): string {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+}
+

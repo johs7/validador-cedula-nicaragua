@@ -60,6 +60,12 @@ describe('Nicaraguan ID Utils', () => {
             expect(typeof age).toBe('number');
             expect(age).toBeGreaterThan(0);
         });
+
+        it('formatea correctamente la fecha como dd-mm-yyyy', () => {
+            const parsed = parse('001-030505-1234A');
+            expect(parsed?.birthDateFormatted).toBe('03-05-2005');
+        });
+
     });
 
     describe('Validaciones negativas', () => {
