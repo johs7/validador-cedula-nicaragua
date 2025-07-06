@@ -95,7 +95,7 @@ export interface NicaraguanIdData {
   department: string;
   municipality: string;
   birthDate: Date;
-  birthDateFormatted?: string;
+  birthDateFormatted: string;
   serial: string;
   verifier: string;
   isAdult: boolean;
