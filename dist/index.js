@@ -3,22 +3,31 @@ export function isValid(id) {
     return validate(id).valid;
 }
 export function validate(id) {
-    const pattern = /^\d{3}-\d{6}-\d{4}[A-Z]$/;
-    if (!pattern.test(id)) {
+    const raw = id.trim();
+    // Acepta con o sin guiones, mayúsculas y minúsculas
+    const match = raw.match(/^(\d{3})-?(\d{2})(\d{2})(\d{2})-?(\d{4})([A-Za-z])$/);
+    if (!match) {
         return { valid: false, error: 'Formato inválido. Esperado: NNN-DDMMYY-NNNNL' };
     }
-    const match = id.match(/^(\d{3})-(\d{2})(\d{2})(\d{2})-(\d{4})([A-Z])$/);
-    if (!match) {
-        return { valid: false, error: 'No coincide con el patrón esperado' };
+    const [_, code, dd, mm, yy, serial, letter] = match;
+    // Letra debe ser mayúscula
+    if (letter !== letter.toUpperCase()) {
+        return { valid: false, error: 'La letra verificador debe ser mayúscula' };
     }
-    const [, code, yy, mm, dd] = match;
+    // Validar código municipal
     if (!municipalityMap[code]) {
         return { valid: false, error: 'Código de municipio desconocido' };
     }
     const year = resolveBirthYear(Number(yy));
     const birthDate = new Date(year, Number(mm) - 1, Number(dd));
-    if (Number.isNaN(birthDate.getTime())) {
+    // Verificar fecha válida real (no 32-01-2020, por ejemplo)
+    if (birthDate.getFullYear() !== year ||
+        birthDate.getMonth() !== Number(mm) - 1 ||
+        birthDate.getDate() !== Number(dd)) {
         return { valid: false, error: 'Fecha de nacimiento inválida' };
+    }
+    if (birthDate > new Date()) {
+        return { valid: false, error: 'Fecha de nacimiento en el futuro no válida' };
     }
     if (!isEligibleForId(birthDate)) {
         return { valid: false, error: 'Edad insuficiente para tener cédula (mínimo 16 años)' };
@@ -26,7 +35,7 @@ export function validate(id) {
     return { valid: true };
 }
 export function format(raw) {
-    const cleaned = raw.replace(/\D/g, '').toUpperCase();
+    const cleaned = raw.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     if (cleaned.length !== 14)
         return raw;
     return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 9)}-${cleaned.slice(9, 13)}${cleaned[13]}`;
@@ -38,10 +47,11 @@ export function parse(id) {
     const result = validate(id);
     if (!result.valid)
         return null;
-    const match = id.match(/^(\d{3})-(\d{2})(\d{2})(\d{2})-(\d{4})([A-Z])$/);
+    const formatted = format(id);
+    const match = formatted.match(/^(\d{3})-(\d{2})(\d{2})(\d{2})-(\d{4})([A-Z])$/);
     if (!match)
         return null;
-    const [, code, yy, mm, dd, serial, verifier] = match;
+    const [, code, dd, mm, yy, serial, verifier] = match;
     const year = resolveBirthYear(Number(yy));
     const birthDate = new Date(year, Number(mm) - 1, Number(dd));
     const region = municipalityMap[code];
@@ -76,8 +86,14 @@ export function getAge(date) {
     return age;
 }
 export function isMinor(id) {
-    const data = parse(id);
-    return data ? getAge(data.birthDate) < 18 : false;
+    const cleaned = format(id);
+    const match = cleaned.match(/^(\d{3})-(\d{2})(\d{2})(\d{2})-(\d{4})([A-Z])$/);
+    if (!match)
+        return false;
+    const [, , dd, mm, yy] = match;
+    const year = resolveBirthYear(Number(yy));
+    const birthDate = new Date(year, Number(mm) - 1, Number(dd));
+    return getAge(birthDate) < 18;
 }
 export function isEligibleForId(date) {
     const today = new Date();

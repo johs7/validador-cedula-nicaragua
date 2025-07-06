@@ -3,55 +3,50 @@ import {
     isValid,
     parse,
     getAge,
-    getValidationError,
     isMinor,
+    getValidationError,
     getLocation,
+    isEligibleForId,
+    getBirthDate,
 } from './index';
 
 describe('Nicaraguan ID Utils', () => {
-    describe('Validaciones positivas', () => {
+    describe('✅ Validaciones positivas', () => {
         it('valida una cédula correcta', () => {
             expect(isValid('001-030505-1234A')).toBe(true);
+        });
+
+        it('acepta cédulas sin guiones', () => {
+            expect(isValid('0010305051234A')).toBe(true);
         });
 
         it('parsea correctamente una cédula válida', () => {
             const parsed = parse('001-030505-1234A');
             expect(parsed?.department).toBe('Managua');
+            expect(parsed?.municipality).toBe('Managua');
             expect(getAge(parsed!.birthDate)).toBeGreaterThan(18);
-        });
-
-        it('acepta cédulas sin guiones', () => {
-            const parsed = parse('0010305051234A');
-            expect(parsed?.department).toBe('Managua');
         });
 
         it('detecta correctamente si una persona es menor de edad', () => {
             const year = new Date().getFullYear() - 15;
-            const shortYear = String(year).slice(-2);
-            const id = `001-010101-${shortYear}01A`;
+            const id = `001-${String(`0101${String(year).slice(-2)}`)}-1234A`;
             expect(isMinor(id)).toBe(true);
         });
 
         it('detecta si una persona tiene edad suficiente para tener cédula (16+)', () => {
             const year = new Date().getFullYear() - 17;
-            const shortYear = String(year).slice(-2);
-            const id = `001-010101-${shortYear}01A`;
-            const { isEligibleForId } = parse(id)!;
-            expect(isEligibleForId).toBe(true);
+            const id = `001-0101${String(year).slice(-2)}-1234A`;
+            const parsed = parse(id);
+            expect(parsed?.isEligibleForId).toBe(true);
         });
 
-        it('detecta correctamente si no tiene edad para cédula (<16)', () => {
-            const year = new Date().getFullYear() - 14;
-            const shortYear = String(year).slice(-2);
-            const id = `001-010101-${shortYear}01A`;
-            const { isEligibleForId } = parse(id)!;
-            expect(isEligibleForId).toBe(false);
-        });
 
-        it('obtiene correctamente la ubicación', () => {
-            const loc = getLocation('001-030505-1234A');
-            expect(loc?.department).toBe('Managua');
-            expect(loc?.municipality).toBe('Managua');
+        it('cédula con año 1999 (99) debe ser válida', () => {
+            const id = `002-151299-5678B`; // 15-12-1999
+            expect(isValid(id)).toBe(true);
+            const parsed = parse(id)!;
+            expect(parsed.birthDate.getFullYear()).toBe(1999);
+            expect(parsed.isEligibleForId).toBe(true);
         });
 
         it('calcula correctamente la edad', () => {
@@ -66,9 +61,19 @@ describe('Nicaraguan ID Utils', () => {
             expect(parsed?.birthDateFormatted).toBe('03-05-2005');
         });
 
+        it('obtiene correctamente la ubicación', () => {
+            const loc = getLocation('001-030505-1234A');
+            expect(loc?.department).toBe('Managua');
+            expect(loc?.municipality).toBe('Managua');
+        });
+
+        it('getBirthDate devuelve una fecha válida', () => {
+            const date = getBirthDate('001-030505-1234A');
+            expect(date).toBeInstanceOf(Date);
+        });
     });
 
-    describe('Validaciones negativas', () => {
+    describe('❌ Validaciones negativas', () => {
         it('rechaza formato inválido', () => {
             expect(isValid('bad-id')).toBe(false);
         });
@@ -90,5 +95,14 @@ describe('Nicaraguan ID Utils', () => {
         it('rechaza cédulas con dígitos faltantes', () => {
             expect(isValid('001-030505-123A')).toBe(false);
         });
+
+        it('detecta correctamente si no tiene edad para cédula (<16)', () => {
+            const year = new Date().getFullYear() - 14;
+            const id = `001-0101${String(year).slice(-2)}-1234A`;
+            expect(parse(id)).toBeNull(); // ✅
+        });
+
+
+
     });
 });
