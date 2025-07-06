@@ -43,8 +43,13 @@ export function validate(id: string): ValidationResult {
         return { valid: false, error: 'Fecha de nacimiento inválida' };
     }
 
+    if (!isEligibleForId(birthDate)) {
+        return { valid: false, error: 'Edad insuficiente para tener cédula (mínimo 16 años)' };
+    }
+
     return { valid: true };
 }
+
 
 export function format(raw: string): string {
     const cleaned = raw.replace(/\D/g, '').toUpperCase();
